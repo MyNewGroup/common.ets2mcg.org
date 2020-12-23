@@ -19,7 +19,19 @@
     {
         "name": "Thai",
         "code": "th",
-        "aliases": [],
+        "aliases": ["th_th"],
         "emoji": "🇹🇭"
+    },
+  	{
+        "name": "Vietnamese",
+        "code": "vi",
+        "aliases": ["vi_vn"],
+        "emoji": "🇻🇳"
+    },
+	{
+        "name": "Indonesian",
+        "code": "id",
+        "aliases": ["id_id"],
+        "emoji": "🇮🇩"
     }
 ]
