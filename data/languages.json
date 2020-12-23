@@ -1,13 +1,5 @@
 [
-    {
-        "name": "Korean",
-        "code": "ko",
-        "aliases": [
-            "ko_kr"
-        ],
-        "emoji": "🇰🇷"
-    },
-    {
+	{
         "name": "English",
         "code": "en",
         "aliases": [
@@ -15,6 +7,14 @@
 			"en_gb"
         ],
         "emoji": "🇬🇧"
+    },
+    {
+        "name": "Korean",
+        "code": "ko",
+        "aliases": [
+            "ko_kr"
+        ],
+        "emoji": "🇰🇷"
     },
     {
         "name": "Thai",
