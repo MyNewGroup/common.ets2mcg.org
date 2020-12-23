@@ -33,5 +33,11 @@
         "code": "id",
         "aliases": ["id_id"],
         "emoji": "🇮🇩"
+    },
+	{
+        "name": "Taiwanese",
+        "code": "tw",
+        "aliases": ["zh_tw"],
+        "emoji": "🇹🇼"
     }
 ]
