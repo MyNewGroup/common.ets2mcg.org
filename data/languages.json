@@ -39,5 +39,11 @@
         "code": "tw",
         "aliases": ["zh_tw"],
         "emoji": "🇹🇼"
+    },
+	{
+        "name": "Malaysian",
+        "code": "my",
+        "aliases": ["ms_my"],
+        "emoji": "🇲🇾"
     }
 ]
