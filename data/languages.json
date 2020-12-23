@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Korean",
+        "code": "ko",
+        "aliases": [
+            "ko_kr"
+        ],
+        "emoji": "🇰🇷"
+    },
+    {
+        "name": "English",
+        "code": "en",
+        "aliases": [
+            "en_us",
+			"en_gb"
+        ],
+        "emoji": "🇬🇧"
+    },
+    {
+        "name": "Thai",
+        "code": "th_th",
+        "aliases": [],
+        "emoji": "🇹🇭"
+    }
+]
