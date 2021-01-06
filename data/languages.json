@@ -35,9 +35,9 @@
         "emoji": "🇮🇩"
     },
 	{
-        "name": "Taiwanese",
-        "code": "tw",
-        "aliases": ["zh_tw"],
+        "name": "Chinese",
+        "code": "cn",
+        "aliases": ["zh_cn", "zh_tw"],
         "emoji": "🇨🇳"
     },
 	{
