@@ -115,7 +115,7 @@
                         update_intervals.push(current_time - last_map_updated_at);
                     console.log(update_intervals);
 
-                    if (update_intervals.length === 5) {
+                    if (update_intervals.length === 3) {
                         clearInterval(interval_id);
                         let avg = update_intervals.reduce((a, b) => a + b, 0) / update_intervals.length;
                         console.log(avg);
@@ -163,7 +163,7 @@
                         } catch (error) {
                             errorTextElement.textContent = error.message;
                         }
-                    }, 500);
+                    }, 1000);
                 }, 1000);
             } catch (e) {
                 alert(e.message);
