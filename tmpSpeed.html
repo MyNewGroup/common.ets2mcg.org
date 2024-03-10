@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TruckersMP Map Speed Tracker</title>
+    <link rel="stylesheet" type="text/css" href="tmpSpeed.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="keywordInput">
+        <div id="keywordForm">
+            <h2 style="margin-top: 0;">Enter the player ID!</h2>
+            <div id="form">
+                <input type="text" id="keywordValue" placeholder="TMPID">
+                <button id="startButton">Start</button>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        <div id="mainWindow">
+            <div id="playerName">Tracking <span>Name</span></div>
+            <div id="speed">- km/h</div>
+            <div id="errorMessage"></div>
+        </div>
+    </div>
+    <script>
+        let window_keyword = document.getElementById("keywordInput");
+        let window_main = document.getElementById("main");
+
+        window_main.style.display = "none";
+
+        let start_time = 0;
+
+        let last_pos = null;
+        let last_time = null;
+
+        let last_map_updated_at = null;
+        let update_intervals = [];
+
+        const nameTextElement = document.querySelector("#playerName span");
+        const speedTextElement = document.querySelector("#speed");
+        const errorTextElement = document.querySelector("#errorMessage");
+
+        let interval_id = null;
+
+        function showForm() {
+            window_keyword.style.display = "flex";
+            window_main.style.display = "none";
+        }
+
+        function showMain() {
+            window_keyword.style.display = "none";
+            window_main.style.display = "flex";
+        }
+
+        function hideAll() {
+            window_keyword.style.display = "none";
+            window_main.style.display = "none";
+        }
+
+        showForm();
+
+        /**
+         * @param {string} name
+         */
+        async function player_search(name) {
+            if (!name.match(/^\d+$/)) {
+                throw new Error("Invalid TMPID");
+            }
+            let res = fetch(`https://tracker.ets2map.com/v3/playersearch?string=${name}`);
+            let data = await (await res).json();
+
+            if (!data.Success) {
+                throw new Error("An error occured while searching for the player. Please try again later.");
+            }
+            if (data.Data === null) {
+                throw new Error("Player not found.");
+            }
+
+            let player = data.Data[0];
+
+            nameTextElement.textContent = player.Name;
+
+            let current_pos = [player.X, player.Y];
+            let current_time = Date.now();
+
+            if (last_pos === null) {
+                last_pos = current_pos;
+                last_time = current_time;
+                return;
+            }
+
+            if (last_pos[0] === current_pos[0] && last_pos[1] === current_pos[1]) {
+                if (current_time - last_time > 10000) {
+                    last_pos = current_pos;
+                    last_time = current_time;
+                }
+            } else {
+                // Calculate the average speed using time difference and distance. Distance units are in meters, time units are in milliseconds. The speed should be shown in m/s.
+                let distance = Math.sqrt(Math.pow(current_pos[0] - last_pos[0], 2) + Math.pow(current_pos[1] - last_pos[1], 2));
+                let time = current_time - last_time;
+                let speed = distance / time * 1000;
+                let kmh = speed * 3.6;
+
+                speedTextElement.textContent = `${kmh.toFixed(0)} km/h`;
+
+                if (Date.now() - start_time < 2000) {
+                    speedTextElement.textContent = "- km/h";
+                }
+
+                if (last_map_updated_at !== null) {
+                    if (update_intervals.length < 10)
+                        update_intervals.push(current_time - last_map_updated_at);
+                    console.log(update_intervals);
+
+                    if (update_intervals.length === 5) {
+                        clearInterval(interval_id);
+                        let avg = update_intervals.reduce((a, b) => a + b, 0) / update_intervals.length;
+                        console.log(avg);
+
+                        let seconds = Math.round(avg / 1000);
+
+                        interval_id = setInterval(async () => {
+                            try {
+                                await player_search(name);
+                                errorTextElement.textContent = "";
+                            } catch (error) {
+                                errorTextElement.textContent = error.message;
+                            }
+                        }, seconds * 1000);
+                    }
+                }
+                last_map_updated_at = current_time;
+
+                last_pos = current_pos;
+                last_time = current_time;
+            }
+        }
+
+        document.getElementById("startButton").addEventListener("click", async () => {
+            let keyword = document.getElementById("keywordValue").value;
+            try {
+                if (interval_id !== null) {
+                    clearInterval(interval_id);
+                }
+
+                hideAll();
+                player_search(keyword);
+
+                start_time = Date.now();
+
+                setTimeout(() => {
+                    player_search(keyword).finally(() => {
+                        showMain();
+                    });
+
+                    interval_id = setInterval(async () => {
+                        try {
+                            await player_search(keyword);
+                            errorTextElement.textContent = "";
+                        } catch (error) {
+                            errorTextElement.textContent = error.message;
+                        }
+                    }, 500);
+                }, 1000);
+            } catch (e) {
+                alert(e.message);
+            }
+        });
+    </script>
+</body>
+
+</html>
