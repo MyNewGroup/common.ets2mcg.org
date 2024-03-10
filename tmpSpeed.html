@@ -62,6 +62,21 @@
 
         showForm();
 
+
+        function specify_interval(interval) {
+            if (interval_id !== null) {
+                clearInterval(interval_id);
+            }
+            interval_id = setInterval(async () => {
+                try {
+                    await player_search(document.getElementById("keywordValue").value);
+                    errorTextElement.textContent = "";
+                } catch (error) {
+                    errorTextElement.textContent = error.message;
+                }
+            }, interval);
+        }
+
         /**
          * @param {string} name
          */
@@ -69,7 +84,10 @@
             if (!name.match(/^\d+$/)) {
                 throw new Error("Invalid TMPID");
             }
-            let res = fetch(`https://tracker.ets2map.com/v3/playersearch?string=${name}`);
+            let res = fetch(`https://tracker.ets2map.com/v3/playersearch?string=${name}`, {
+                credentials: "omit",
+                mode: "cors"
+            });
             let data = await (await res).json();
 
             if (!data.Success) {
@@ -78,8 +96,17 @@
             if (data.Data === null) {
                 throw new Error("Player not found.");
             }
+            if (data.Data.length !== 1 && data.Data.findIndex(p => p.MpId === name) === -1) {
+                specify_interval(10000);
+                throw new Error("Multiple players found. Please specify the TMPID.");
+            }
 
-            let player = data.Data[0];
+            let player = data.Data.find(p => p.MpId === name);
+
+            if (player === undefined) {
+                specify_interval(10000);
+                throw new Error("Player not found.");
+            }
 
             nameTextElement.textContent = player.Name;
 
@@ -122,14 +149,7 @@
 
                         let seconds = Math.round(avg / 1000);
 
-                        interval_id = setInterval(async () => {
-                            try {
-                                await player_search(name);
-                                errorTextElement.textContent = "";
-                            } catch (error) {
-                                errorTextElement.textContent = error.message;
-                            }
-                        }, seconds * 1000);
+                        specify_interval(seconds * 1000);
                     }
                 }
                 last_map_updated_at = current_time;
