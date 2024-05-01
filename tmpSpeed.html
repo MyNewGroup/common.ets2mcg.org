@@ -96,12 +96,12 @@
             if (data.Data === null) {
                 throw new Error("Player not found.");
             }
-            if (data.Data.length !== 1 && data.Data.findIndex(p => p.MpId === name) === -1) {
+            if (data.Data.length !== 1 && data.Data.findIndex(p => String(p.MpId) === name) === -1) {
                 specify_interval(10000);
                 throw new Error("Multiple players found. Please specify the TMPID.");
             }
 
-            let player = data.Data.find(p => p.MpId === name);
+            let player = data.Data.find(p => String(p.MpId) === name);
 
             if (player === undefined) {
                 specify_interval(10000);
